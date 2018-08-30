@@ -5,37 +5,60 @@ namespace diagnostics {
 Utf8LineColumnDecoder::Utf8LineColumnDecoder(const uint8_t* source, size_t size)
     : LineColumnDecoder{ source, size } {}
 
-auto Utf8LineColumnDecoder::doDecoding(size_t offset, size_t hint, const LineAndColumn& start) const -> LineAndColumn
+auto Utf8LineColumnDecoder::doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn
 {
-    size_t currentOffset = hint;
-    LineAndColumn currentPosition = start;
-    while (currentOffset < size())
+    m_offset = hint.offset;
+    m_position = hint.position;
+    while (m_offset < size())
     {
-        if (currentOffset == offset)
+        if (m_offset == offset)
         {
-            return currentPosition;
+            return m_position;
         }
-
-        if (buffer()[currentOffset] == '\n')
-        {
-            ++currentPosition.line; currentPosition.column = 1;
-        }
-        else if (buffer()[currentOffset] == '\r')
-        {
-            ++currentPosition.line; currentPosition.column = 1;
-
-            if (currentOffset + 1 < size() && buffer()[currentOffset + 1] == '\n')
-            {
-                ++currentOffset;
-            }
-        }
-        else
-        {
-            ++currentPosition.column;
-        }
-        ++currentOffset;
+        advance();
     }
     throw std::logic_error{ "cannot reach" };
+}
+
+auto Utf8LineColumnDecoder::doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t>
+{
+    size_t currentOffset = hint.offset;
+    LineAndColumn currentPosition = hint.position;
+    while (currentOffset < size())
+    {
+        if (currentPosition == position)
+        {
+            return currentOffset;
+        }
+        if (currentPosition.line > position.line)
+        {
+            return{};
+        }
+        advance();
+    }
+    return{};
+}
+
+void Utf8LineColumnDecoder::advance() const
+{
+    if (buffer()[m_offset] == '\n')
+    {
+        m_position = m_position.nextLine();
+    }
+    else if (buffer()[m_offset] == '\r')
+    {
+        m_position = m_position.nextLine();
+
+        if (m_offset + 1 < size() && buffer()[m_offset + 1] == '\n')
+        {
+            ++m_offset;
+        }
+    }
+    else
+    {
+        m_position = m_position.nextColumn();
+    }
+    ++m_offset;
 }
 
 }

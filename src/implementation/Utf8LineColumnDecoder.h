@@ -10,7 +10,14 @@ public:
     explicit Utf8LineColumnDecoder(const uint8_t* source, size_t size);
 
 protected:
-    auto doDecoding(size_t offset, size_t hint, const LineAndColumn& start) const -> LineAndColumn override;
+    auto doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn override;
+    auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t> override;
+
+private:
+    void advance() const;
+
+    mutable size_t m_offset;
+    mutable LineAndColumn m_position;
 };
 
 }

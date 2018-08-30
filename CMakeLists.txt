@@ -17,12 +17,14 @@ add_library(DiagnosticsLibrary
 	include/diagnostics/DiagnosticsConsumer.h
 	include/diagnostics/LineColumnDecoder.h
 	include/diagnostics/StandaloneSnippet.h
+	include/diagnostics/StandaloneSnippetBuilder.h
 	src/ConsoleDiagnosticsConsumer.cc
 	src/Diagnostic.cc
 	src/DiagnosticLocation.cc
 	src/DiagnosticsReporter.cc
 	src/LineColumnDecoder.cc
 	src/StandaloneSnippet.cc
+	src/StandaloneSnippetBuilder.cc
 	src/implementation/Utf8LineColumnDecoder.h
 	src/implementation/Utf8LineColumnDecoder.cc
 )

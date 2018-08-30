@@ -24,26 +24,65 @@ auto LineColumnDecoder::decode(size_t offset) const -> LineAndColumn
     Expects(offset < m_size);
 
     LineAndColumn position;
-    if (m_cache.empty())
+    if (m_offsetCache.empty())
     {
-        position = doDecoding(offset, 0, m_basePosition);
+        position = doDecoding(offset, Hint{ 0, m_basePosition });
     }
     else
     {
-        auto iter = m_cache.lower_bound(offset);
-        if (iter == m_cache.cbegin())
+        auto iter = m_offsetCache.lower_bound(offset);
+        if (iter == m_offsetCache.cbegin())
         {
-            position = doDecoding(offset, 0, m_basePosition);
+            position = doDecoding(offset, Hint{ 0, m_basePosition });
         }
         else
         {
             --iter;
-            position = doDecoding(offset, iter->first, iter->second);
+            position = doDecoding(offset, Hint{ iter->first, iter->second });
         }
     }
 
-    m_cache.insert(std::make_pair(offset, position));
+    m_offsetCache.insert(std::make_pair(offset, position));
+    m_positionCache.insert(std::make_pair(position, offset));
     return position;
+}
+
+auto LineColumnDecoder::offset(const LineAndColumn& position) const -> std::optional<size_t>
+{
+    Expects(m_source);
+    Expects(position.line >= 1);
+    Expects(position.column >= 1);
+
+    std::optional<size_t> offset;
+    if (m_positionCache.empty())
+    {
+        offset = doDecoding(position, Hint{ 0, m_basePosition });
+    }
+    else
+    {
+        auto iter = m_positionCache.lower_bound(position);
+        if (iter == m_positionCache.cbegin())
+        {
+            offset = doDecoding(position, Hint{ 0, m_basePosition });
+        }
+        else
+        {
+            --iter;
+            offset = doDecoding(position, Hint{ iter->second, iter->first });
+        }
+    }
+
+    if (offset)
+    {
+        m_offsetCache.insert(std::make_pair(*offset, position));
+        m_positionCache.insert(std::make_pair(position, *offset));
+    }
+    return offset;
+}
+
+auto LineColumnDecoder::lineOffset(size_t line) const -> std::optional<size_t>
+{
+    return offset(LineAndColumn{ line, 1 });
 }
 
 auto LineColumnDecoder::size() const -> size_t
@@ -58,7 +97,8 @@ auto LineColumnDecoder::buffer() const -> const uint8_t*
 
 void LineColumnDecoder::addHint(const Hint& hint)
 {
-    m_cache.insert(std::make_pair(hint.offset, hint.position));
+    m_offsetCache.insert(std::make_pair(hint.offset, hint.position));
+    m_positionCache.insert(std::make_pair(hint.position, hint.offset));
 }
 
 void LineColumnDecoder::addHints(std::initializer_list<Hint> hints)
@@ -72,7 +112,7 @@ void LineColumnDecoder::addHints(std::initializer_list<Hint> hints)
 auto LineColumnDecoder::hints() const -> std::vector<Hint>
 {
     std::vector<Hint> result;
-    for (auto hintPair : m_cache)
+    for (auto hintPair : m_offsetCache)
     {
         result.push_back(Hint{ hintPair.first, hintPair.second });
     }

@@ -14,10 +14,16 @@ public:
     mutable std::vector<Hint> providedHints;
 
 protected:
-    auto doDecoding(size_t offset, size_t hint, const LineAndColumn& start) const -> LineAndColumn override
+    auto doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn override
     {
-        providedHints.push_back({ hint, start });
+        providedHints.push_back(hint);
         return { offset + 1, 1 };
+    }
+
+    auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t> override
+    {
+        providedHints.push_back(hint);
+        return position.line - 1;
     }
 };
 
@@ -59,6 +65,28 @@ SCENARIO("Caching previous decoding results", "[Support][LineColumnDecoder]")
             THEN("The result is stored as a new hint")
             {
                 auto const r = std::vector<LineColumnDecoder::Hint>{ LineColumnDecoder::Hint{ 10, result } };
+                REQUIRE_THAT(decoder.hints(), Equals(r));
+            }
+        }
+
+        WHEN("Decoding a line/column pair that exists")
+        {
+            const LineAndColumn TestPosition{ 10, 1 };
+            auto result = decoder.offset(TestPosition);
+
+            THEN("The search is hinted to start from offset 0")
+            {
+                REQUIRE(decoder.providedHints[0].offset == 0);
+            }
+            THEN("The search is hinted to start from position 1:1")
+            {
+                REQUIRE(decoder.providedHints[0].position.line == 1);
+                REQUIRE(decoder.providedHints[0].position.column == 1);
+            }
+            THEN("The result is stored as a new hint")
+            {
+                REQUIRE(result.has_value());
+                auto const r = std::vector<LineColumnDecoder::Hint>{ LineColumnDecoder::Hint{ *result, TestPosition } };
                 REQUIRE_THAT(decoder.hints(), Equals(r));
             }
         }

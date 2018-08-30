@@ -13,7 +13,7 @@ public:
 
     auto testDecode(size_t offset, size_t hint, const LineAndColumn& start) const-> LineAndColumn
     {
-        return doDecoding(offset, hint, start);
+        return doDecoding(offset, Hint{ hint, start });
     }
 };
 
@@ -26,7 +26,7 @@ SCENARIO("Decoding ASCII characters", "[Support][LineColumnDecoder][Utf8]")
 
     GIVEN("An UTF-8 line/column decoder")
     {
-        LineColumnDecoder::LineAndColumn startPosition{ 1, 1 };
+        LineAndColumn startPosition{ 1, 1 };
 
         WHEN("Encountering a normal character")
         {

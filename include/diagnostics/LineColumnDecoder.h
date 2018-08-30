@@ -10,15 +10,40 @@
 
 namespace diagnostics {
 
+struct LineAndColumn
+{
+    size_t line = 1;
+    size_t column = 1;
+
+    bool isValid() const
+    {
+        return line >= 1 && column >= 1;
+    }
+
+    auto operator<(const LineAndColumn& rhs) const
+    {
+        return line < rhs.line || (line == rhs.line && column < rhs.column);
+    }
+
+    auto operator==(const LineAndColumn& rhs) const
+    {
+        return line == rhs.line && column == rhs.column;
+    }
+
+    auto nextLine() const -> LineAndColumn
+    {
+        return { line + 1, 1 };
+    }
+
+    auto nextColumn() const -> LineAndColumn
+    {
+        return { line, column + 1 };
+    }
+};
+
 class LineColumnDecoder
 {
 public:
-    struct LineAndColumn
-    {
-        size_t line = 0;
-        size_t column = 0;
-    };
-
     enum class Encoding
     {
         Ascii,
@@ -32,6 +57,8 @@ public:
     explicit LineColumnDecoder(const uint8_t* source, size_t size);
 
     auto decode(size_t offset) const -> LineAndColumn;
+    auto offset(const LineAndColumn& position) const -> std::optional<size_t>;
+    auto lineOffset(size_t line) const -> std::optional<size_t>;
 
     struct Hint
     {
@@ -48,11 +75,13 @@ protected:
     auto buffer() const -> const uint8_t*;
 
 private:
-    virtual auto doDecoding(size_t offset, size_t hint, const LineAndColumn& start) const -> LineAndColumn = 0;
+    virtual auto doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn = 0;
+    virtual auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t> = 0;
 
     const uint8_t* m_source = nullptr;
     size_t m_size = 0;
-    mutable std::map<size_t, LineAndColumn> m_cache;
+    mutable std::map<size_t, LineAndColumn> m_offsetCache;
+    mutable std::map<LineAndColumn, size_t> m_positionCache;
     LineAndColumn m_basePosition{ 1, 1 };
 };
 
