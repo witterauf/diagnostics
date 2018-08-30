@@ -42,7 +42,7 @@ auto StandaloneSnippetBuilder::setSourceRange(size_t start, size_t end) -> Stand
 {
     Expects(start < m_size);
     Expects(end < m_size);
-    m_sourceRange = DiagnosticSnippet::Range{ start, end };
+    m_sourceRange = DiagnosticSnippet::Range{start, end};
     return *this;
 }
 
@@ -51,7 +51,7 @@ auto StandaloneSnippetBuilder::setSourceRange(const LineAndColumn& start, const 
 {
     Expects(start.isValid());
     Expects(end.isValid());
-    m_sourceRange = LineColumnRange{ start, end };
+    m_sourceRange = LineColumnRange{start, end};
     return *this;
 }
 
@@ -59,7 +59,7 @@ auto StandaloneSnippetBuilder::setMarkedRange(size_t start, size_t end) -> Stand
 {
     Expects(start < m_size);
     Expects(end < m_size);
-    m_markedRange = DiagnosticSnippet::Range{ start, end };
+    m_markedRange = DiagnosticSnippet::Range{start, end};
     return *this;
 }
 
@@ -68,7 +68,7 @@ auto StandaloneSnippetBuilder::setMarkedRange(const LineAndColumn& start, const 
 {
     Expects(start.isValid());
     Expects(end.isValid());
-    m_markedRange = LineColumnRange{ start, end };
+    m_markedRange = LineColumnRange{start, end};
     return *this;
 }
 
@@ -114,7 +114,7 @@ void StandaloneSnippetBuilder::findSourceOffsetFullLines()
         auto const range = std::get<DiagnosticSnippet::Range>(*m_sourceRange);
         auto const start = m_decoder->decode(range.start);
         auto const end = m_decoder->decode(range.end);
-        lcRange = { start, end };
+        lcRange = {start, end};
     }
     else
     {
@@ -130,7 +130,7 @@ void StandaloneSnippetBuilder::findSourceOffsetFullLines()
     }
     else
     {
-        throw std::runtime_error{ "invalid start line" };
+        throw std::runtime_error{"invalid start line"};
     }
     if (auto maybeOffset = m_decoder->lineOffset(endLine))
     {
@@ -138,7 +138,7 @@ void StandaloneSnippetBuilder::findSourceOffsetFullLines()
     }
     else
     {
-        throw std::runtime_error{ "invalid end line" };
+        throw std::runtime_error{"invalid end line"};
     }
 }
 
@@ -159,7 +159,7 @@ void StandaloneSnippetBuilder::findSourceOffsetsPartialLines()
         }
         else
         {
-            throw std::runtime_error{ "invalid start line" };
+            throw std::runtime_error{"invalid start line"};
         }
         if (auto maybeOffset = m_decoder->offset(range.end))
         {
@@ -167,7 +167,7 @@ void StandaloneSnippetBuilder::findSourceOffsetsPartialLines()
         }
         else
         {
-            throw std::runtime_error{ "invalid end line" };
+            throw std::runtime_error{"invalid end line"};
         }
     }
 }
@@ -188,21 +188,21 @@ void StandaloneSnippetBuilder::findCursorOffset()
         }
         else
         {
-            throw std::runtime_error{ "invalid cursor offset" };
+            throw std::runtime_error{"invalid cursor offset"};
         }
     }
 
     if (absoluteOffset < m_startOffset || absoluteOffset >= m_endOffset)
     {
-        throw std::runtime_error{ "cursor not within source range" };
+        throw std::runtime_error{"cursor not within source range"};
     }
     m_cursorOffset = absoluteOffset - m_startOffset;
 }
 
 void StandaloneSnippetBuilder::extractSnippetCode()
 {
-    m_snippetCode = std::string{
-        reinterpret_cast<const char*>(m_source + m_startOffset), m_endOffset - m_startOffset };
+    m_snippetCode = std::string{reinterpret_cast<const char*>(m_source + m_startOffset),
+                                m_endOffset - m_startOffset};
 }
 
-}
+} // namespace diagnostics

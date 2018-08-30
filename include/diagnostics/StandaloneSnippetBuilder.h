@@ -1,7 +1,7 @@
 #pragma once
 
-#include "StandaloneSnippet.h"
 #include "LineColumnDecoder.h"
+#include "StandaloneSnippet.h"
 #include <memory>
 #include <optional>
 #include <variant>
@@ -17,9 +17,11 @@ public:
     auto setCursor(size_t offset) -> StandaloneSnippetBuilder&;
     auto setCursor(const LineAndColumn& position) -> StandaloneSnippetBuilder&;
     auto setSourceRange(size_t start, size_t end) -> StandaloneSnippetBuilder&;
-    auto setSourceRange(const LineAndColumn& start, const LineAndColumn& end) -> StandaloneSnippetBuilder&;
+    auto setSourceRange(const LineAndColumn& start, const LineAndColumn& end)
+        -> StandaloneSnippetBuilder&;
     auto setMarkedRange(size_t start, size_t end) -> StandaloneSnippetBuilder&;
-    auto setMarkedRange(const LineAndColumn& start, const LineAndColumn& end) -> StandaloneSnippetBuilder&;
+    auto setMarkedRange(const LineAndColumn& start, const LineAndColumn& end)
+        -> StandaloneSnippetBuilder&;
 
     // building options
     auto onlyFullLines(bool isActive) -> StandaloneSnippetBuilder&;
@@ -53,4 +55,4 @@ private:
     std::string m_snippetCode;
 };
 
-}
+} // namespace diagnostics
