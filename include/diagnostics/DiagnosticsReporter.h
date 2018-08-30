@@ -27,7 +27,7 @@ public:
 
     private:
         explicit Builder(DiagnosticsReporter* reporter, const std::string& message)
-            : m_message{ message }, m_diagnostic{}, m_reporter{ reporter } {}
+            : m_message{ message }, m_reporter{ reporter } {}
 
         void applySubstitutions();
 

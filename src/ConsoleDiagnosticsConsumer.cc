@@ -17,13 +17,18 @@ void ConsoleDiagnosticsConsumer::startPhase(const std::string& name)
 
 void ConsoleDiagnosticsConsumer::consume(const Diagnostic& diagnostic)
 {
-    if (diagnostic.isFileSpecific())
+    if (diagnostic.hasLocation())
     {
         auto const& location = diagnostic.location();
-        if (location.isFileLocation())
+        if (location.isInFile())
         {
-            std::cout << location.filename() << ": ";
+            std::cout << location.path().string();
         }
+        if (location.hasComment())
+        {
+            std::cout << "[" << location.comment() << "]";
+        }
+        std::cout << location.line() << ":" << location.column() << ": ";
     }
 
     switch (diagnostic.level())
@@ -41,6 +46,11 @@ void ConsoleDiagnosticsConsumer::consume(const Diagnostic& diagnostic)
     }
 
     std::cout << ": " << diagnostic.message() << "\n";
+
+    if (diagnostic.hasSnippet())
+    {
+        std::cout << diagnostic.snippet().get() << "\n";
+    }
 }
 
 void ConsoleDiagnosticsConsumer::endPhase()

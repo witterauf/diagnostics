@@ -3,66 +3,8 @@
 
 namespace diagnostics {
 
-DiagnosticLocation::DiagnosticLocation(const std::string& filename, size_t offset)
-    : m_filename{ filename }, m_offset{ offset } {}
-
-DiagnosticLocation::DiagnosticLocation(const uint8_t* buffer, size_t offset)
-    : m_buffer{ buffer }, m_offset{ offset } {}
-
-auto DiagnosticLocation::kind() const -> Kind
-{
-    if (isFileLocation())
-    {
-        return Kind::File;
-    }
-    else if (isMemoryLocation())
-    {
-        return Kind::Memory;
-    }
-    else
-    {
-        return Kind::None;
-    }
-}
-
-bool DiagnosticLocation::isValid() const
-{
-    return !(m_filename.empty() && !m_buffer);
-}
-
-bool DiagnosticLocation::isFileLocation() const
-{
-    return !m_filename.empty();
-}
-
-bool DiagnosticLocation::isMemoryLocation() const
-{
-    return m_buffer != nullptr;
-}
-
-auto DiagnosticLocation::filename() const -> const std::string&
-{
-    Expects(isFileLocation());
-    return m_filename;
-}
-
-auto DiagnosticLocation::buffer() const -> const uint8_t*
-{
-    Expects(isMemoryLocation());
-    return m_buffer;
-}
-
-auto DiagnosticLocation::offset() const->size_t
-{
-    Expects(isValid());
-    return m_offset;
-}
-
-Diagnostic::Diagnostic(
-    DiagnosticLevel level,
-    const std::string& message,
-    const DiagnosticLocation& location)
-    : m_level{ level }, m_message{ message }, m_location{ location } {}
+Diagnostic::Diagnostic(DiagnosticLevel level, const std::string& message)
+    : m_level{ level }, m_message{ message } {}
 
 bool Diagnostic::hasTag() const
 {
@@ -90,9 +32,9 @@ void Diagnostic::setLevel(DiagnosticLevel level)
     m_level = level;
 }
 
-bool Diagnostic::isFileSpecific() const
+bool Diagnostic::hasLocation() const
 {
-    return m_location.isValid();
+    return m_location.has_value();
 }
 
 void Diagnostic::setLocation(const DiagnosticLocation& location)
@@ -102,7 +44,8 @@ void Diagnostic::setLocation(const DiagnosticLocation& location)
 
 auto Diagnostic::location() const -> const DiagnosticLocation&
 {
-    return m_location;
+    Expects(hasLocation());
+    return *m_location;
 }
 
 void Diagnostic::setMessage(const std::string& message)
@@ -113,6 +56,26 @@ void Diagnostic::setMessage(const std::string& message)
 auto Diagnostic::message() const -> const std::string&
 {
     return m_message;
+}
+
+bool Diagnostic::hasSnippet() const
+{
+    return m_snippet != nullptr;
+}
+
+void Diagnostic::setSnippet(std::shared_ptr<DiagnosticSnippet>&& snippet)
+{
+    m_snippet = std::move(snippet);
+}
+
+auto Diagnostic::snippet() const -> const DiagnosticSnippet&
+{
+    return *m_snippet;
+}
+
+auto Diagnostic::shareSnippet() const -> std::shared_ptr<DiagnosticSnippet>
+{
+    return m_snippet;
 }
 
 }
