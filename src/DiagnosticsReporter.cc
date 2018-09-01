@@ -28,6 +28,12 @@ auto DiagnosticsReporter::Builder::at(const DiagnosticLocation& location) -> Bui
     return *this;
 }
 
+auto DiagnosticsReporter::Builder::snippet(std::shared_ptr<DiagnosticSnippet>&& snippet) -> Builder&
+{
+    m_diagnostic.setSnippet(std::move(snippet));
+    return *this;
+}
+
 void DiagnosticsReporter::Builder::applySubstitutions()
 {
     std::string message = m_message;

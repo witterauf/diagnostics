@@ -20,6 +20,7 @@ public:
         auto level(DiagnosticLevel level) -> Builder&;
         auto at(const DiagnosticLocation& location) -> Builder&;
         auto tag(const std::string& tag) -> Builder&;
+        auto snippet(std::shared_ptr<DiagnosticSnippet>&& snippet) -> Builder&;
         auto substitute(const std::string& value) -> Builder&;
         auto substitute(int value) -> Builder&;
         auto substitute(unsigned int value) -> Builder&;
