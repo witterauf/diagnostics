@@ -3,6 +3,9 @@
 
 namespace diagnostics {
 
+FileReporter::FileReporter(const std::filesystem::path& path)
+    : m_path{ path } {}
+
 void FileReporter::setFileName(const std::filesystem::path& path)
 {
     m_path = path;

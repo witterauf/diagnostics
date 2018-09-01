@@ -9,6 +9,9 @@ namespace diagnostics {
 class FileReporter : public SourceReporter
 {
 public:
+    FileReporter() = default;
+    explicit FileReporter(const std::filesystem::path& path);
+
     void setFileName(const std::filesystem::path& path);
     void setComment(const std::string& comment);
     void unsetComment();
