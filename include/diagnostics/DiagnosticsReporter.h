@@ -26,7 +26,7 @@ public:
     template<class Reporter, class... Args>
     auto makeProxyUnique(Args&&... args) -> std::unique_ptr<Reporter>
     {
-        auto proxy = std::make_unique<Reporter>(std::forward<Args>(args...));
+        auto proxy = std::make_unique<Reporter>(std::forward<Args>(args)...);
         proxy->registerConsumer(this);
         return std::move(proxy);
     }
@@ -34,7 +34,7 @@ public:
     template<class Reporter, class... Args>
     auto makeProxy(Args&&... args) -> Reporter
     {
-        Reporter proxy{ std::forward<Args>(args...) };
+        Reporter proxy{ std::forward<Args>(args)... };
         proxy.registerConsumer(this);
         return std::move(proxy);
     }
