@@ -1,4 +1,4 @@
-#include "StandaloneSnippetBuilder.h"
+#include "support/StandaloneSnippetBuilder.h"
 #include "Contracts.h"
 
 namespace diagnostics {

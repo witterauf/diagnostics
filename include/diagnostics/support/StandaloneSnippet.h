@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DiagnosticSnippet.h"
+#include "diagnostics/DiagnosticSnippet.h"
 
 namespace diagnostics {
 

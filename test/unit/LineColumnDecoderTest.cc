@@ -1,4 +1,4 @@
-#include "diagnostics/LineColumnDecoder.h"
+#include "diagnostics/support/LineColumnDecoder.h"
 #include "catch.hpp"
 
 using namespace diagnostics;

@@ -1,4 +1,4 @@
-#include "StandaloneSnippet.h"
+#include "support/StandaloneSnippet.h"
 
 namespace diagnostics {
 

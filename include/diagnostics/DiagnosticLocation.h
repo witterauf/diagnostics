@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LineAndColumn.h"
 #include <cstddef>
 #include <filesystem>
 #include <optional>
@@ -9,9 +10,10 @@ namespace diagnostics {
 class DiagnosticLocation
 {
 public:
-    explicit DiagnosticLocation(const std::filesystem::path& path, size_t line, size_t column);
-    explicit DiagnosticLocation(size_t line, size_t column);
+    explicit DiagnosticLocation(const std::filesystem::path& path, const LineAndColumn& position);
+    explicit DiagnosticLocation(const LineAndColumn& position);
 
+    auto position() const -> const LineAndColumn&;
     auto line() const -> size_t;
     auto column() const -> size_t;
 
@@ -26,7 +28,7 @@ public:
 private:
     std::optional<std::filesystem::path> m_path;
     std::optional<std::string> m_comment;
-    size_t m_line = 0, m_column = 0;
+    LineAndColumn m_position;
 };
 
 }

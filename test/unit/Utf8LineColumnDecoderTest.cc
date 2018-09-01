@@ -1,4 +1,4 @@
-#include "implementation/Utf8LineColumnDecoder.h"
+#include "support/implementation/Utf8LineColumnDecoder.h"
 #include "catch.hpp"
 
 using namespace diagnostics;

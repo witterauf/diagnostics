@@ -1,6 +1,6 @@
 #pragma once
 
-#include "diagnostics/LineColumnDecoder.h"
+#include "diagnostics/support/LineColumnDecoder.h"
 
 namespace diagnostics {
 

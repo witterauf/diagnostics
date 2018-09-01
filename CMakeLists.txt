@@ -15,18 +15,19 @@ add_library(DiagnosticsLibrary
 	include/diagnostics/DiagnosticSnippet.h
 	include/diagnostics/DiagnosticsReporter.h
 	include/diagnostics/DiagnosticsConsumer.h
-	include/diagnostics/LineColumnDecoder.h
-	include/diagnostics/StandaloneSnippet.h
-	include/diagnostics/StandaloneSnippetBuilder.h
+	include/diagnostics/LineAndColumn.h
+	include/diagnostics/support/LineColumnDecoder.h
+	include/diagnostics/support/StandaloneSnippet.h
+	include/diagnostics/support/StandaloneSnippetBuilder.h
 	src/ConsoleDiagnosticsConsumer.cc
 	src/Diagnostic.cc
 	src/DiagnosticLocation.cc
 	src/DiagnosticsReporter.cc
-	src/LineColumnDecoder.cc
-	src/StandaloneSnippet.cc
-	src/StandaloneSnippetBuilder.cc
-	src/implementation/Utf8LineColumnDecoder.h
-	src/implementation/Utf8LineColumnDecoder.cc
+	src/support/LineColumnDecoder.cc
+	src/support/StandaloneSnippet.cc
+	src/support/StandaloneSnippetBuilder.cc
+	src/support/implementation/Utf8LineColumnDecoder.h
+	src/support/implementation/Utf8LineColumnDecoder.cc
 )
 target_all_warnings(DiagnosticsLibrary)
 target_warnings_are_errors(DiagnosticsLibrary)

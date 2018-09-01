@@ -3,20 +3,25 @@
 
 namespace diagnostics {
 
-DiagnosticLocation::DiagnosticLocation(const std::filesystem::path& path, size_t line, size_t column)
-    : m_path{ path }, m_line{ line }, m_column{ column } {}
+DiagnosticLocation::DiagnosticLocation(const std::filesystem::path& path, const LineAndColumn& position)
+    : m_path{ path }, m_position{ position } {}
 
-DiagnosticLocation::DiagnosticLocation(size_t line, size_t column)
-    : m_line{ line }, m_column{ column } {}
+DiagnosticLocation::DiagnosticLocation(const LineAndColumn& position)
+    : m_position{ position } {}
+
+auto DiagnosticLocation::position() const -> const LineAndColumn&
+{
+    return m_position;
+}
 
 auto DiagnosticLocation::line() const -> size_t
 {
-    return m_line;
+    return m_position.line;
 }
 
 auto DiagnosticLocation::column() const -> size_t
 {
-    return m_column;
+    return m_position.column;
 }
 
 bool DiagnosticLocation::isInFile() const
