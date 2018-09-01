@@ -9,5 +9,7 @@
     throw std::runtime_error{ "Contract violation: precondition failure at " __FILE__ ": " TOSTRING(__LINE__) };
 #define Ensures(cond) if (!(cond)) \
     throw std::runtime_error{ "Contract violation: postcondition failure at " __FILE__ ": " TOSTRING(__LINE__) };
+#define InvalidCase(value) \
+    throw std::runtime_error{ "Invalid value (" + std::to_string(static_cast<unsigned int>(value)) + ") in switch statement at " __FILE__ ": " TOSTRING(__LINE__) };
 
 #define UNUSED(x) (void)(x)
