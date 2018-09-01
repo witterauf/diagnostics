@@ -88,9 +88,8 @@ auto StandaloneSnippetBuilder::build() -> std::shared_ptr<StandaloneSnippet>
     extractSnippetCode();
 
     auto snippet = std::make_shared<StandaloneSnippet>(m_snippetCode, m_cursorOffset);
-
     reset();
-    return nullptr;
+    return std::move(snippet);
 }
 
 void StandaloneSnippetBuilder::findSourceOffsets()
@@ -122,7 +121,7 @@ void StandaloneSnippetBuilder::findSourceOffsetFullLines()
     }
 
     auto const startLine = lcRange.start.line;
-    auto const endLine = lcRange.end.line + 1;
+    auto const endLine = lcRange.end.line;
 
     if (auto maybeOffset = m_decoder->lineOffset(startLine))
     {
@@ -132,7 +131,7 @@ void StandaloneSnippetBuilder::findSourceOffsetFullLines()
     {
         throw std::runtime_error{"invalid start line"};
     }
-    if (auto maybeOffset = m_decoder->lineOffset(endLine))
+    if (auto maybeOffset = m_decoder->endOfLineOffset(endLine))
     {
         m_endOffset = *maybeOffset;
     }

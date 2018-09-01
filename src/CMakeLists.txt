@@ -6,13 +6,21 @@ set(DIAGNOSTICS_SOURCES
 	${DIAGNOSTICS_INCLUDE}/Diagnostic.h
 	${DIAGNOSTICS_INCLUDE}/DiagnosticLocation.h
 	${DIAGNOSTICS_INCLUDE}/DiagnosticSnippet.h
+	${DIAGNOSTICS_INCLUDE}/DiagnosticsBuilder.h
 	${DIAGNOSTICS_INCLUDE}/DiagnosticsReporter.h
 	${DIAGNOSTICS_INCLUDE}/DiagnosticsConsumer.h
+	${DIAGNOSTICS_INCLUDE}/SourceReporter.h
+	${DIAGNOSTICS_INCLUDE}/FileReporter.h
+	${DIAGNOSTICS_INCLUDE}/InMemoryReporter.h
 	${DIAGNOSTICS_INCLUDE}/LineAndColumn.h
 	ConsoleDiagnosticsConsumer.cc
 	Diagnostic.cc
 	DiagnosticLocation.cc
+	DiagnosticsBuilder.cc
 	DiagnosticsReporter.cc
+	SourceReporter.cc
+	FileReporter.cc
+	InMemoryReporter.cc
 )
 set(SUPPORT_SOURCES
 	${DIAGNOSTICS_INCLUDE}/support/LineColumnDecoder.h

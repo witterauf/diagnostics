@@ -29,12 +29,15 @@ public:
     auto decode(size_t offset) const -> LineAndColumn;
     auto offset(const LineAndColumn& position) const -> std::optional<size_t>;
     auto lineOffset(size_t line) const -> std::optional<size_t>;
+    auto endOfLineOffset(size_t line) const -> std::optional<size_t>;
 
-    struct Hint
+    struct OffsetAndPosition
     {
         size_t offset;
         LineAndColumn position;
     };
+
+    struct Hint : public OffsetAndPosition {};
 
     void addHint(const Hint& hint);
     void addHints(std::initializer_list<Hint> hints);
@@ -46,7 +49,7 @@ protected:
 
 private:
     virtual auto doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn = 0;
-    virtual auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t> = 0;
+    virtual auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<OffsetAndPosition> = 0;
 
     const uint8_t* m_source = nullptr;
     size_t m_size = 0;

@@ -11,7 +11,7 @@ public:
 
 protected:
     auto doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn override;
-    auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t> override;
+    auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<OffsetAndPosition> override;
 
 private:
     void advance() const;

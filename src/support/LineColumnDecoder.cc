@@ -50,39 +50,47 @@ auto LineColumnDecoder::decode(size_t offset) const -> LineAndColumn
 auto LineColumnDecoder::offset(const LineAndColumn& position) const -> std::optional<size_t>
 {
     Expects(m_source);
-    Expects(position.line >= 1);
-    Expects(position.column >= 1);
+    Expects(position.isValid());
 
-    std::optional<size_t> offset;
+    std::optional<OffsetAndPosition> result;
     if (m_positionCache.empty())
     {
-        offset = doDecoding(position, Hint{ 0, m_basePosition });
+        result = doDecoding(position, Hint{ 0, m_basePosition });
     }
     else
     {
         auto iter = m_positionCache.lower_bound(position);
         if (iter == m_positionCache.cbegin())
         {
-            offset = doDecoding(position, Hint{ 0, m_basePosition });
+            result = doDecoding(position, Hint{ 0, m_basePosition });
         }
         else
         {
             --iter;
-            offset = doDecoding(position, Hint{ iter->second, iter->first });
+            result = doDecoding(position, Hint{ iter->second, iter->first });
         }
     }
 
-    if (offset)
+    if (result)
     {
-        m_offsetCache.insert(std::make_pair(*offset, position));
-        m_positionCache.insert(std::make_pair(position, *offset));
+        m_offsetCache.insert(std::make_pair(result->offset, result->position));
+        m_positionCache.insert(std::make_pair(result->position, result->offset));
+        return result->offset;
     }
-    return offset;
+    else
+    {
+        return{};
+    }
 }
 
 auto LineColumnDecoder::lineOffset(size_t line) const -> std::optional<size_t>
 {
     return offset(LineAndColumn{ line, 1 });
+}
+
+auto LineColumnDecoder::endOfLineOffset(size_t line) const -> std::optional<size_t>
+{
+    return offset(LineAndColumn{line, LineAndColumn::EndOfLine});
 }
 
 auto LineColumnDecoder::size() const -> size_t

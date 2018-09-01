@@ -1,9 +1,12 @@
 #include "Utf8LineColumnDecoder.h"
+#include "Contracts.h"
 
 namespace diagnostics {
 
 Utf8LineColumnDecoder::Utf8LineColumnDecoder(const uint8_t* source, size_t size)
-    : LineColumnDecoder{ source, size } {}
+    : LineColumnDecoder{source, size}
+{
+}
 
 auto Utf8LineColumnDecoder::doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn
 {
@@ -11,32 +14,45 @@ auto Utf8LineColumnDecoder::doDecoding(size_t offset, const Hint& hint) const ->
     m_position = hint.position;
     while (m_offset < size())
     {
-        if (m_offset == offset)
+        if (m_offset >= offset)
         {
             return m_position;
         }
         advance();
     }
-    throw std::logic_error{ "cannot reach" };
+    throw std::logic_error{"cannot reach"};
 }
 
-auto Utf8LineColumnDecoder::doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t>
+auto Utf8LineColumnDecoder::doDecoding(const LineAndColumn& position, const Hint& hint) const
+    -> std::optional<OffsetAndPosition>
 {
-    size_t currentOffset = hint.offset;
-    LineAndColumn currentPosition = hint.position;
-    while (currentOffset < size())
+    m_offset = hint.offset;
+    m_position = hint.position;
+    LineAndColumn oldPosition = {0, 0};
+    size_t oldOffset = 0;
+    while (m_offset < size())
     {
-        if (currentPosition == position)
+        if (m_position == position)
         {
-            return currentOffset;
+            return OffsetAndPosition{m_offset, m_position};
         }
-        if (currentPosition.line > position.line)
+        if (m_position.line > position.line)
         {
-            return{};
+            break;
         }
+
+        oldOffset = m_offset;
+        oldPosition = m_position;
         advance();
     }
-    return{};
+    if (position.isEndOfLine())
+    {
+        if (oldPosition.isValid() && oldPosition.line == position.line)
+        {
+            return OffsetAndPosition{oldOffset, oldPosition};
+        }
+    }
+    return {};
 }
 
 void Utf8LineColumnDecoder::advance() const
@@ -61,4 +77,4 @@ void Utf8LineColumnDecoder::advance() const
     ++m_offset;
 }
 
-}
+} // namespace diagnostics

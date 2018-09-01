@@ -20,10 +20,10 @@ protected:
         return { offset + 1, 1 };
     }
 
-    auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<size_t> override
+    auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<OffsetAndPosition> override
     {
         providedHints.push_back(hint);
-        return position.line - 1;
+        return OffsetAndPosition{ position.line - 1, position.line };
     }
 };
 

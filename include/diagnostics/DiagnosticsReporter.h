@@ -1,50 +1,43 @@
 #pragma once
 
-#include "Diagnostic.h"
+#include "DiagnosticsBuilder.h"
+#include "DiagnosticsConsumer.h"
+#include <memory>
 #include <set>
 #include <vector>
 
 namespace diagnostics {
 
-class DiagnosticsConsumer;
-
-class DiagnosticsReporter
+class DiagnosticsReporter : public DiagnosticsConsumer
 {
 public:
-    class Builder
-    {
-        friend class DiagnosticsReporter;
+    virtual ~DiagnosticsReporter() = default;
 
-    public:
-        ~Builder();
-        auto level(DiagnosticLevel level) -> Builder&;
-        auto at(const DiagnosticLocation& location) -> Builder&;
-        auto tag(const std::string& tag) -> Builder&;
-        auto snippet(std::shared_ptr<DiagnosticSnippet>&& snippet) -> Builder&;
-        auto substitute(const std::string& value) -> Builder&;
-        auto substitute(int value) -> Builder&;
-        auto substitute(unsigned int value) -> Builder&;
-        auto substitute(size_t value) -> Builder&;
+    virtual auto report(const std::string& message) -> DiagnosticsBuilder;
+    virtual void report(const Diagnostic& diagnostic);
 
-    private:
-        explicit Builder(DiagnosticsReporter* reporter, const std::string& message)
-            : m_message{ message }, m_reporter{ reporter } {}
-
-        void applySubstitutions();
-
-        std::string m_message;
-        Diagnostic m_diagnostic;
-        DiagnosticsReporter* m_reporter;
-        std::vector<std::string> m_substitutions;
-    };
-
-    void startPhase(const std::string& name);
-    auto report(const std::string& message) -> Builder;
-    void report(const Diagnostic& diagnostic);
-    void endPhase();
+    void startPhase(const std::string& name) override;
+    void consume(const Diagnostic& diagnostic) override;
+    void endPhase() override;
 
     void registerConsumer(DiagnosticsConsumer* consumer);
     void unregisterConsumer(DiagnosticsConsumer* consumer);
+
+    template<class Reporter, class... Args>
+    auto makeProxyUnique(Args&&... args) -> std::unique_ptr<Reporter>
+    {
+        auto proxy = std::make_unique<Reporter>(std::forward<Args>(args...));
+        proxy->registerConsumer(this);
+        return std::move(proxy);
+    }
+
+    template<class Reporter, class... Args>
+    auto makeProxy(Args&&... args) -> Reporter
+    {
+        Reporter proxy{ std::forward<Args>(args...) };
+        proxy.registerConsumer(this);
+        return std::move(proxy);
+    }
 
 private:
     std::set<DiagnosticsConsumer*> m_consumers;
