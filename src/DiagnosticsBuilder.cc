@@ -3,6 +3,14 @@
 
 namespace diagnostics {
 
+DiagnosticsBuilder::DiagnosticsBuilder(DiagnosticsReporter* reporter,
+                                       const DiagnosticLocation& location,
+                                       const std::string& message)
+    : m_reporter{ reporter }, m_message{ message }
+{
+    m_diagnostic.setLocation(location);
+}
+
 DiagnosticsBuilder::~DiagnosticsBuilder()
 {
     applySubstitutions();

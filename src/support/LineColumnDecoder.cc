@@ -88,6 +88,19 @@ auto LineColumnDecoder::lineOffset(size_t line) const -> std::optional<size_t>
     return offset(LineAndColumn{ line, 1 });
 }
 
+auto LineColumnDecoder::lastColumn(size_t line) const -> std::optional<size_t>
+{
+    if (auto maybeOffset = endOfLineOffset(line))
+    {
+        auto position = decode(*maybeOffset);
+        return position.column;
+    }
+    else
+    {
+        return{};
+    }
+}
+
 auto LineColumnDecoder::endOfLineOffset(size_t line) const -> std::optional<size_t>
 {
     return offset(LineAndColumn{line, LineAndColumn::EndOfLine});

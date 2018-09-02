@@ -58,4 +58,19 @@ struct LineAndColumn
     }
 };
 
+struct LineAndColumnRange
+{
+    LineAndColumn start, end;
+
+    bool isEmpty() const
+    {
+        return start == end || end < start;
+    }
+
+    bool containsLine(size_t line) const
+    {
+        return line >= start.line && line <= end.line;
+    }
+};
+
 }

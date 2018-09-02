@@ -17,9 +17,45 @@ void ConsoleDiagnosticsConsumer::startPhase(const std::string& name)
 
 void ConsoleDiagnosticsConsumer::consume(const Diagnostic& diagnostic)
 {
-    if (diagnostic.hasLocation())
+    m_diagnostic = &diagnostic;
+    printDiagnostic();
+    printSnippet();
+}
+
+void ConsoleDiagnosticsConsumer::endPhase()
+{
+}
+
+void ConsoleDiagnosticsConsumer::printMessage()
+{
+    switch (diagnostic().level())
     {
-        auto const& location = diagnostic.location();
+    case DiagnosticLevel::Note: std::cout << "note"; break;
+    case DiagnosticLevel::Warning: std::cout << "warning"; break;
+    case DiagnosticLevel::Error: std::cout << "error"; break;
+    case DiagnosticLevel::Fatal: std::cout << "fatal error"; break;
+    default: break;
+    }
+
+    if (diagnostic().hasTag())
+    {
+        std::cout << " [" << diagnostic().tag() << "]";
+    }
+
+    std::cout << ": " << diagnostic().message() << "\n";
+}
+
+void ConsoleDiagnosticsConsumer::printDiagnostic()
+{
+    printLocation();
+    printMessage();
+}
+
+void ConsoleDiagnosticsConsumer::printLocation()
+{
+    if (diagnostic().hasLocation())
+    {
+        auto const& location = diagnostic().location();
         if (location.isInFile())
         {
             std::cout << location.path().string();
@@ -28,33 +64,27 @@ void ConsoleDiagnosticsConsumer::consume(const Diagnostic& diagnostic)
         {
             std::cout << "[" << location.comment() << "]";
         }
+        if (location.isInFile() || location.hasComment())
+        {
+            std::cout << ":";
+        }
         std::cout << location.line() << ":" << location.column() << ": ";
-    }
-
-    switch (diagnostic.level())
-    {
-    case DiagnosticLevel::Note: std::cout << "Note"; break;
-    case DiagnosticLevel::Warning: std::cout << "Warning"; break;
-    case DiagnosticLevel::Error: std::cout << "Error"; break;
-    case DiagnosticLevel::Fatal: std::cout << "Fatal error"; break;
-    default: break;
-    }
-
-    if (diagnostic.hasTag())
-    {
-        std::cout << " [" << diagnostic.tag() << "]";
-    }
-
-    std::cout << ": " << diagnostic.message() << "\n";
-
-    if (diagnostic.hasSnippet())
-    {
-        std::cout << diagnostic.snippet().get() << "\n";
     }
 }
 
-void ConsoleDiagnosticsConsumer::endPhase()
+void ConsoleDiagnosticsConsumer::printSnippet()
 {
+    if (!diagnostic().hasSnippet())
+    {
+        return;
+    }
+
+    auto const& snippet = diagnostic().snippet();
+    for (auto number = 0U; number < snippet.lineCount(); ++number)
+    {
+        auto const line = snippet.line(number);
+        std::cout << "  " << line.number << "  " << line.text << "\n";
+    }
 }
 
 }

@@ -19,20 +19,23 @@ SCENARIO("Extraction of snippet code", "[Support][StandaloneSnippetBuilder][Stan
     builder.setSource(input, size);
     builder.setDecoder(decoder.get());
 
-    GIVEN("Building within full line mode on and using line/column pairs")
+    GIVEN("Building using line/column pairs")
     {
-        builder.onlyFullLines(true);
-
         WHEN("Using a source range within one line")
         {
             builder.setSourceRange(LineAndColumn{ 4, 2 }, LineAndColumn{ 4, 3 });
             builder.setCursor(LineAndColumn{ 4, 2 });
 
-            THEN("The entire line is returned")
+            THEN("One line is returned")
             {
                 auto snippet = builder.build();
+                REQUIRE(snippet->lineCount() == 1);
 
-                REQUIRE(snippet->get() == "4----");
+                AND_THEN("That is the line from the source range")
+                {
+
+                    REQUIRE(snippet->line(0).text == "4----");
+                }
             }
         }
         WHEN("Using a source range spanning more than one line")
@@ -43,8 +46,13 @@ SCENARIO("Extraction of snippet code", "[Support][StandaloneSnippetBuilder][Stan
             THEN("All lines are returned")
             {
                 auto snippet = builder.build();
+                REQUIRE(snippet->lineCount() == 2);
 
-                REQUIRE(snippet->get() == "4----\n5-----");
+                AND_THEN("That are the lines from the source range")
+                {
+                    REQUIRE(snippet->line(0).text == "4----");
+                    REQUIRE(snippet->line(1).text == "5-----");
+                }
             }
         }
     }

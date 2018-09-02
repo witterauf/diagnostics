@@ -11,6 +11,8 @@ class DiagnosticsBuilder
 public:
     explicit DiagnosticsBuilder(DiagnosticsReporter* reporter, const std::string& message)
         : m_message{ message }, m_reporter{ reporter } {}
+    explicit DiagnosticsBuilder(DiagnosticsReporter* reporter, const DiagnosticLocation& location,
+                                const std::string& message);
 
     ~DiagnosticsBuilder();
 

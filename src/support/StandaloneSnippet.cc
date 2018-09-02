@@ -1,24 +1,38 @@
 #include "support/StandaloneSnippet.h"
+#include "Contracts.h"
 
 namespace diagnostics {
 
-StandaloneSnippet::StandaloneSnippet(const std::string& snippet, size_t cursor)
-    : m_snippet{ snippet }, m_cursor{ cursor } {}
-
-StandaloneSnippet::StandaloneSnippet(const std::string& snippet, const Range& range, size_t cursor)
-    : m_snippet{ snippet }, m_markedRange{ range }, m_cursor{ cursor } {}
-
-auto StandaloneSnippet::get() const -> std::string
+StandaloneSnippet::StandaloneSnippet(const LineAndColumnRange& sourceRange, const LineAndColumn& cursor)
+    : m_sourceRange{ sourceRange }, m_cursor{ cursor }
 {
-    return m_snippet;
+    Expects(!sourceRange.isEmpty());
 }
 
-auto StandaloneSnippet::markedRange() const -> std::optional<Range>
+void StandaloneSnippet::append(const Line& line)
 {
-    return m_markedRange;
+    Expects(m_lines.empty() || line.number == m_lines.back().number + 1);
+    m_lines.push_back(line);
 }
 
-auto StandaloneSnippet::cursor() const -> size_t
+auto StandaloneSnippet::lineCount() const -> size_t
+{
+    Expects(m_lines.size() == m_sourceRange.end.line - m_sourceRange.start.line + 1);
+    return m_lines.size();
+}
+
+auto StandaloneSnippet::line(size_t line) const -> Line
+{
+    Expects(line < lineCount());
+    return m_lines[line];
+}
+
+auto StandaloneSnippet::sourceRange() const -> LineAndColumnRange
+{
+    return m_sourceRange;
+}
+
+auto StandaloneSnippet::cursor() const -> LineAndColumn
 {
     return m_cursor;
 }

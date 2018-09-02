@@ -1,23 +1,26 @@
 #pragma once
 
 #include "diagnostics/DiagnosticSnippet.h"
+#include "diagnostics/LineAndColumn.h"
 
 namespace diagnostics {
 
 class StandaloneSnippet : public DiagnosticSnippet
 {
 public:
-    explicit StandaloneSnippet(const std::string& snippet, size_t cursor);
-    explicit StandaloneSnippet(const std::string& snippet, const Range& range, size_t cursor);
+    explicit StandaloneSnippet(const LineAndColumnRange& sourceRange, const LineAndColumn& cursor);
 
-    auto get() const -> std::string override;
-    auto markedRange() const -> std::optional<Range> override;
-    auto cursor() const -> size_t override;
+    void append(const Line& line);
+
+    auto lineCount() const -> size_t override;
+    auto line(size_t line) const -> Line override;
+    auto sourceRange() const -> LineAndColumnRange override;
+    auto cursor() const -> LineAndColumn override;
 
 private:
-    std::string m_snippet;
-    std::optional<Range> m_markedRange;
-    size_t m_cursor;
+    std::vector<Line> m_lines;
+    LineAndColumnRange m_sourceRange;
+    LineAndColumn m_cursor;
 };
 
 }

@@ -13,9 +13,7 @@ void SourceReporter::setSource(const uint8_t* source, size_t size, LineColumnDec
 auto SourceReporter::report(const std::string& message, size_t offset) -> DiagnosticsBuilder
 {
     auto location = makeLocation(offset);
-    DiagnosticsBuilder builder{ this, message };
-    builder.at(location);
-    return builder;
+    return DiagnosticsBuilder{ this, location, message };
 }
 
 auto SourceReporter::snippetBuilder() -> StandaloneSnippetBuilder&

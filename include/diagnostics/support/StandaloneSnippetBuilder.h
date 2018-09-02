@@ -23,36 +23,27 @@ public:
     auto setMarkedRange(const LineAndColumn& start, const LineAndColumn& end)
         -> StandaloneSnippetBuilder&;
 
-    // building options
-    auto onlyFullLines(bool isActive) -> StandaloneSnippetBuilder&;
-
     auto build() -> std::shared_ptr<StandaloneSnippet>;
 
 private:
     void reset();
-    void findSourceOffsets();
-    void findSourceOffsetFullLines();
-    void findSourceOffsetsPartialLines();
+    void translateSourceRange();
+    void translateMarkedRange();
     void findCursorOffset();
-    void extractSnippetCode();
+    auto extractLine(size_t line) -> std::string;
+    auto makeSnippet() -> std::shared_ptr<StandaloneSnippet>;
 
     const uint8_t* m_source = nullptr;
     size_t m_size = 0;
     LineColumnDecoder* m_decoder = nullptr;
 
-    struct LineColumnRange
-    {
-        LineAndColumn start, end;
-    };
-
-    std::optional<std::variant<DiagnosticSnippet::Range, LineColumnRange>> m_sourceRange;
-    std::optional<std::variant<DiagnosticSnippet::Range, LineColumnRange>> m_markedRange;
+    std::optional<std::variant<DiagnosticSnippet::Range, LineAndColumnRange>> m_sourceRange;
+    std::optional<std::variant<DiagnosticSnippet::Range, LineAndColumnRange>> m_markedRange;
     std::optional<std::variant<size_t, LineAndColumn>> m_cursor;
-    bool m_onlyFullLines = true;
 
-    size_t m_startOffset, m_endOffset;
-    size_t m_cursorOffset;
-    std::string m_snippetCode;
+    std::optional<LineAndColumnRange> m_realMarkedRange;
+    LineAndColumnRange m_realSourceRange;
+    LineAndColumn m_realCursor;
 };
 
 } // namespace diagnostics

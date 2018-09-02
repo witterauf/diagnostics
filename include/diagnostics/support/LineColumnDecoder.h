@@ -30,6 +30,7 @@ public:
     auto offset(const LineAndColumn& position) const -> std::optional<size_t>;
     auto lineOffset(size_t line) const -> std::optional<size_t>;
     auto endOfLineOffset(size_t line) const -> std::optional<size_t>;
+    auto lastColumn(size_t line) const -> std::optional<size_t>;
 
     struct OffsetAndPosition
     {
