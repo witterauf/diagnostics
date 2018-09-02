@@ -18,8 +18,19 @@ private:
     void printLocation();
     void printMessage();
     void printSnippet();
+    void printIndentation();
+    void printLineNumber(size_t number);
+    void printMarking(size_t number);
+    
+    void calculateSnippetLayout();
+    auto snippetCodeLeft() const -> size_t;
 
     const Diagnostic* m_diagnostic = nullptr;
+
+    bool m_includeLineNumber = true;
+    size_t m_snippetIndentation = 2;
+    size_t m_lineNumberWidth;
+    size_t m_lineNumberIndentation = 2;
 };
 
 }
