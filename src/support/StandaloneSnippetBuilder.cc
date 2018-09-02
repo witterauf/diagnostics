@@ -95,50 +95,57 @@ auto StandaloneSnippetBuilder::makeSnippet() -> std::shared_ptr<StandaloneSnippe
         DiagnosticSnippet::Line line;
         line.number = number;
         line.text = extractLine(number);
-
-        if (number == m_realCursor.line)
-        {
-            line.cursor = m_realCursor.column;
-        }
-        if (m_realMarkedRange)
-        {
-            DiagnosticSnippet::Range range;
-            if (number == m_realMarkedRange->start.line)
-            {
-                if (auto maybeColumn = m_decoder->lastColumn(number))
-                {
-                    range.start = m_realMarkedRange->start.column;
-                    range.end = *maybeColumn;
-                }
-                else
-                {
-                    throw std::runtime_error{ "invalid line" };
-                }
-            }
-            else if (number > m_realMarkedRange->start.line && number < m_realMarkedRange->end.line)
-            {
-                if (auto maybeColumn = m_decoder->lastColumn(number))
-                {
-                    range.start = 1;
-                    range.end = *maybeColumn;
-                }
-                else
-                {
-                    throw std::runtime_error{ "invalid line" };
-                }
-            }
-            else if (number == m_realMarkedRange->end.line)
-            {
-                range.start = 1;
-                range.end = m_realMarkedRange->end.column;
-            }
-            line.mark = range;
-        }
-
+        line.mark = markLine(number);
+        line.cursor = putLineCursor(number);
         snippet->append(line);
     }
 
     return std::move(snippet);
+}
+
+auto StandaloneSnippetBuilder::putLineCursor(size_t number) -> std::optional<size_t>
+{
+    if (number == m_realCursor.line)
+    {
+        return m_realCursor.column;
+    }
+    else
+    {
+        return{};
+    }
+}
+
+auto StandaloneSnippetBuilder::markLine(size_t number) -> std::optional<DiagnosticSnippet::Range>
+{
+    if (m_realMarkedRange && m_realMarkedRange->containsLine(number))
+    {
+        DiagnosticSnippet::Range range;
+        if (number == m_realMarkedRange->start.line)
+        {
+            range.start = m_realMarkedRange->start.column;
+        }
+        else
+        {
+            range.start = 1;
+        }
+        if (number == m_realMarkedRange->end.line)
+        {
+            range.end = m_realMarkedRange->end.column;
+        }
+        else
+        {
+            if (auto maybeColumn = m_decoder->lastColumn(number))
+            {
+                range.end = *maybeColumn;
+            }
+            else
+            {
+                throw std::runtime_error{ "invalid line" };
+            }
+        }
+        return range;
+    }
+    return{};
 }
 
 auto StandaloneSnippetBuilder::extractLine(size_t line) -> std::string

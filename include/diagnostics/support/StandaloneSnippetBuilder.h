@@ -30,8 +30,10 @@ private:
     void translateSourceRange();
     void translateMarkedRange();
     void findCursorOffset();
-    auto extractLine(size_t line) -> std::string;
     auto makeSnippet() -> std::shared_ptr<StandaloneSnippet>;
+    auto extractLine(size_t number) -> std::string;
+    auto markLine(size_t number) -> std::optional<DiagnosticSnippet::Range>;
+    auto putLineCursor(size_t number) -> std::optional<size_t>;
 
     const uint8_t* m_source = nullptr;
     size_t m_size = 0;
