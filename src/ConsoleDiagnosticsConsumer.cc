@@ -1,4 +1,5 @@
 #include "ConsoleDiagnosticsConsumer.h"
+#include <iomanip>
 #include <iostream>
 
 namespace diagnostics {
