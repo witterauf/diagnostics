@@ -33,21 +33,21 @@ set(SUPPORT_SOURCES
 	support/implementation/Utf8LineColumnDecoder.cc
 )
 
-add_library(DiagnosticsLibrary
+add_library(Diagnostics
 	${DIAGNOSTICS_SOURCES}
 	${SUPPORT_SOURCES}
 )
-target_all_warnings(DiagnosticsLibrary)
-target_warnings_are_errors(DiagnosticsLibrary)
-target_compile_features(DiagnosticsLibrary PUBLIC cxx_std_17)
-target_include_directories(DiagnosticsLibrary
+target_all_warnings(Diagnostics)
+target_warnings_are_errors(Diagnostics)
+target_compile_features(Diagnostics PUBLIC cxx_std_17)
+target_include_directories(Diagnostics
 	PUBLIC
          $<INSTALL_INTERFACE:include/>
          $<BUILD_INTERFACE:${DIAGNOSTICS_INCLUDE_DIR}/>
 	PRIVATE
 		"${DIAGNOSTICS_INCLUDE_DIR}/diagnostics"
 )
-add_library(Diagnostics::Diagnostics ALIAS DiagnosticsLibrary)
+add_library(Diagnostics::Diagnostics ALIAS Diagnostics)
 
 source_group("Diagnostics" FILES ${DIAGNOSTICS_SOURCES})
 source_group("Diagnostics\\Support" FILES ${SUPPORT_SOURCES})
@@ -63,13 +63,13 @@ write_basic_package_version_file(
 )
 configure_file("${DIAGNOSTICS_CMAKE_PATH}/DiagnosticsConfig.cmake.in" DiagnosticsConfig.cmake @ONLY)
     
-install(TARGETS DiagnosticsLibrary EXPORT DiagnosticsLibrary
+install(TARGETS Diagnostics EXPORT Diagnostics
     ARCHIVE DESTINATION "lib/"
     LIBRARY DESTINATION "lib/"
     RUNTIME DESTINATION "bin/"
 )
 install(DIRECTORY ${DIAGNOSTICS_INCLUDE_DIR} DESTINATION include)
-install(EXPORT DiagnosticsLibrary NAMESPACE Diagnostics:: DESTINATION lib/cmake/diagnostics)
+install(EXPORT Diagnostics NAMESPACE Diagnostics:: DESTINATION lib/cmake/diagnostics)
 install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/DiagnosticsConfigVersion.cmake
