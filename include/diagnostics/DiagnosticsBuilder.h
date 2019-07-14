@@ -23,7 +23,7 @@ public:
     auto substitute(const std::string& value) -> DiagnosticsBuilder&;
     auto substitute(int value) -> DiagnosticsBuilder&;
     auto substitute(unsigned int value) -> DiagnosticsBuilder&;
-    auto substitute(size_t value) -> DiagnosticsBuilder&;
+    auto substitute(unsigned long long value) -> DiagnosticsBuilder&;
 
 private:
     void applySubstitutions();

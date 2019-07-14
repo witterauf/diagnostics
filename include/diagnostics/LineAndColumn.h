@@ -9,8 +9,8 @@ struct LineAndColumn
     size_t line = 1;
     size_t column = 1;
 
-    static constexpr size_t EndOfLine = ~0ULL;
-    static constexpr size_t EndOfSource = ~0ULL;
+    static constexpr size_t EndOfLine = ~0UL;
+    static constexpr size_t EndOfSource = ~0UL;
 
     bool isSpecial() const
     {

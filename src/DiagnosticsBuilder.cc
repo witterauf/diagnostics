@@ -98,7 +98,7 @@ auto DiagnosticsBuilder::substitute(unsigned int value) -> DiagnosticsBuilder&
     return substitute(std::to_string(value));
 }
 
-auto DiagnosticsBuilder::substitute(size_t value) -> DiagnosticsBuilder&
+auto DiagnosticsBuilder::substitute(unsigned long long value) -> DiagnosticsBuilder&
 {
     return substitute(std::to_string(value));
 }
