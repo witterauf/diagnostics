@@ -82,25 +82,9 @@ void DiagnosticsBuilder::applySubstitutions()
     m_message = message;
 }
 
-auto DiagnosticsBuilder::substitute(const std::string& value) -> DiagnosticsBuilder&
+void DiagnosticsBuilder::substituteString(const std::string& value)
 {
     m_substitutions.push_back(value);
-    return *this;
-}
-
-auto DiagnosticsBuilder::substitute(int value) -> DiagnosticsBuilder&
-{
-    return substitute(std::to_string(value));
-}
-
-auto DiagnosticsBuilder::substitute(unsigned int value) -> DiagnosticsBuilder&
-{
-    return substitute(std::to_string(value));
-}
-
-auto DiagnosticsBuilder::substitute(unsigned long long value) -> DiagnosticsBuilder&
-{
-    return substitute(std::to_string(value));
 }
 
 }

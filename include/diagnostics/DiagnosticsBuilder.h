@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Diagnostic.h"
+#include <string>
+#include <type_traits>
 
 namespace diagnostics {
 
@@ -20,13 +22,24 @@ public:
     auto at(const DiagnosticLocation& location) -> DiagnosticsBuilder&;
     auto tag(const std::string& tag) -> DiagnosticsBuilder&;
     auto snippet(std::shared_ptr<DiagnosticSnippet>&& snippet) -> DiagnosticsBuilder&;
-    auto substitute(const std::string& value) -> DiagnosticsBuilder&;
-    auto substitute(int value) -> DiagnosticsBuilder&;
-    auto substitute(unsigned int value) -> DiagnosticsBuilder&;
-    auto substitute(unsigned long long value) -> DiagnosticsBuilder&;
+
+    template<class T>
+    auto substitute(const T& value) -> DiagnosticsBuilder&
+    {
+        if constexpr (std::is_arithmetic<T>::value)
+        {
+            substituteString(std::to_string(value));
+        }
+        else
+        {
+            substituteString(value);
+        }
+        return *this;
+    }
 
 private:
     void applySubstitutions();
+    void substituteString(const std::string& value);
 
     std::string m_message;
     Diagnostic m_diagnostic;
