@@ -4,7 +4,10 @@
 namespace diagnostics {
 
 Diagnostic::Diagnostic(DiagnosticLevel level, const std::string& message)
-    : m_level{ level }, m_message{ message } {}
+    : m_level{level}
+    , m_message{message}
+{
+}
 
 bool Diagnostic::hasTag() const
 {
@@ -78,4 +81,19 @@ auto Diagnostic::shareSnippet() const -> std::shared_ptr<DiagnosticSnippet>
     return m_snippet;
 }
 
+bool Diagnostic::hasDetails() const
+{
+    return !m_details.empty();
 }
+
+void Diagnostic::setDetails(const std::string& details)
+{
+    m_details = details;
+}
+
+auto Diagnostic::details() const -> const std::string&
+{
+    return m_details;
+}
+
+} // namespace diagnostics

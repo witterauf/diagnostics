@@ -21,10 +21,17 @@ void ConsoleDiagnosticsConsumer::consume(const Diagnostic& diagnostic)
     m_diagnostic = &diagnostic;
     printDiagnostic();
     printSnippet();
+    printDetails();
 }
 
-void ConsoleDiagnosticsConsumer::endPhase()
+void ConsoleDiagnosticsConsumer::endPhase() {}
+
+void ConsoleDiagnosticsConsumer::printDetails()
 {
+    if (m_diagnostic->hasDetails())
+    {
+        std::cout << m_diagnostic->details() << "\n";
+    }
 }
 
 void ConsoleDiagnosticsConsumer::printMessage()
@@ -94,10 +101,7 @@ void ConsoleDiagnosticsConsumer::printSnippet()
 
 static void repeat(char c, size_t count)
 {
-    for (auto i = 0U; i < count; ++i)
-    {
-        std::cout << c;
-    }
+    for (auto i = 0U; i < count; ++i) { std::cout << c; }
 }
 
 void ConsoleDiagnosticsConsumer::printIndentation()
@@ -152,7 +156,8 @@ void ConsoleDiagnosticsConsumer::calculateSnippetLayout()
         auto const& snippet = diagnostic().snippet();
         auto const firstLine = snippet.sourceRange().start.line;
         auto const lastLine = snippet.sourceRange().end.line;
-        m_lineNumberWidth = std::max(std::to_string(firstLine).length(), std::to_string(lastLine).length());
+        m_lineNumberWidth =
+            std::max(std::to_string(firstLine).length(), std::to_string(lastLine).length());
     }
     else
     {
@@ -170,4 +175,4 @@ auto ConsoleDiagnosticsConsumer::diagnostic() const -> const Diagnostic&
     return *m_diagnostic;
 }
 
-}
+} // namespace diagnostics

@@ -6,16 +6,20 @@ namespace diagnostics {
 DiagnosticsBuilder::DiagnosticsBuilder(DiagnosticsReporter* reporter,
                                        const DiagnosticLocation& location,
                                        const std::string& message)
-    : m_message{ message }, m_reporter{ reporter }
+    : m_message{message}
+    , m_reporter{reporter}
 {
     m_diagnostic.setLocation(location);
 }
 
 DiagnosticsBuilder::~DiagnosticsBuilder()
 {
-    applySubstitutions();
-    m_diagnostic.setMessage(m_message);
-    m_reporter->report(m_diagnostic);
+    if (m_reporter)
+    {
+        applySubstitutions();
+        m_diagnostic.setMessage(m_message);
+        m_reporter->report(m_diagnostic);
+    }
 }
 
 auto DiagnosticsBuilder::level(DiagnosticLevel level) -> DiagnosticsBuilder&
@@ -36,9 +40,16 @@ auto DiagnosticsBuilder::at(const DiagnosticLocation& location) -> DiagnosticsBu
     return *this;
 }
 
-auto DiagnosticsBuilder::snippet(std::shared_ptr<DiagnosticSnippet>&& snippet) -> DiagnosticsBuilder&
+auto DiagnosticsBuilder::snippet(std::shared_ptr<DiagnosticSnippet>&& snippet)
+    -> DiagnosticsBuilder&
 {
     m_diagnostic.setSnippet(std::move(snippet));
+    return *this;
+}
+
+auto DiagnosticsBuilder::details(const std::string& details) -> DiagnosticsBuilder&
+{
+    m_diagnostic.setDetails(details);
     return *this;
 }
 
@@ -68,11 +79,11 @@ void DiagnosticsBuilder::applySubstitutions()
         }
         if (!atLeastOneDigit)
         {
-            throw std::runtime_error{ "invalid format string" };
+            throw std::runtime_error{"invalid format string"};
         }
         if (index > m_substitutions.size())
         {
-            throw std::runtime_error{ "invalid substitution index" };
+            throw std::runtime_error{"invalid substitution index"};
         }
 
         message.replace(startPos, pos - startPos, m_substitutions.at(index));
@@ -87,4 +98,18 @@ void DiagnosticsBuilder::substituteString(const std::string& value)
     m_substitutions.push_back(value);
 }
 
+DiagnosticsBuilder::DiagnosticsBuilder(DiagnosticsBuilder&& other)
+{
+    m_message = std::move(other.m_message);
+    m_diagnostic = std::move(other.m_diagnostic);
+    m_reporter = std::move(other.m_reporter);
+    other.m_reporter = nullptr;
+    m_substitutions = std::move(other.m_substitutions);
 }
+
+auto DiagnosticsBuilder::release() -> DiagnosticsBuilder
+{
+    return std::move(*this);
+}
+
+} // namespace diagnostics

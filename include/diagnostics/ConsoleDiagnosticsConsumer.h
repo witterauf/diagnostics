@@ -21,6 +21,7 @@ private:
     void printIndentation();
     void printLineNumber(size_t number);
     void printMarking(size_t number);
+    void printDetails();
     
     void calculateSnippetLayout();
     auto snippetCodeLeft() const -> size_t;
