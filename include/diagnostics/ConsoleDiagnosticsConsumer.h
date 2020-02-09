@@ -11,6 +11,9 @@ public:
     void consume(const Diagnostic& diagnostic) override;
     void endPhase() override;
 
+    void showTag();
+    void hideTag();
+
 private:
     auto diagnostic() const -> const Diagnostic&;
 
@@ -22,7 +25,7 @@ private:
     void printLineNumber(size_t number);
     void printMarking(size_t number);
     void printDetails();
-    
+
     void calculateSnippetLayout();
     auto snippetCodeLeft() const -> size_t;
 
@@ -32,6 +35,7 @@ private:
     size_t m_snippetIndentation = 2;
     size_t m_lineNumberWidth;
     size_t m_lineNumberIndentation = 2;
+    bool m_showTag{false};
 };
 
-}
+} // namespace diagnostics

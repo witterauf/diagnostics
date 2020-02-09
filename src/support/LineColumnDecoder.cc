@@ -16,7 +16,10 @@ auto LineColumnDecoder::make(const uint8_t* source, size_t size, Encoding encodi
 }
 
 LineColumnDecoder::LineColumnDecoder(const uint8_t* source, size_t size)
-    : m_source{ source }, m_size{ size } {}
+    : m_source{source}
+    , m_size{size}
+{
+}
 
 auto LineColumnDecoder::decode(size_t offset) const -> LineAndColumn
 {
@@ -26,19 +29,19 @@ auto LineColumnDecoder::decode(size_t offset) const -> LineAndColumn
     LineAndColumn position;
     if (m_offsetCache.empty())
     {
-        position = doDecoding(offset, Hint{ 0, m_basePosition });
+        position = doDecoding(offset, Hint{0, m_basePosition});
     }
     else
     {
         auto iter = m_offsetCache.lower_bound(offset);
         if (iter == m_offsetCache.cbegin())
         {
-            position = doDecoding(offset, Hint{ 0, m_basePosition });
+            position = doDecoding(offset, Hint{0, m_basePosition});
         }
         else
         {
             --iter;
-            position = doDecoding(offset, Hint{ iter->first, iter->second });
+            position = doDecoding(offset, Hint{iter->first, iter->second});
         }
     }
 
@@ -55,19 +58,19 @@ auto LineColumnDecoder::offset(const LineAndColumn& position) const -> std::opti
     std::optional<OffsetAndPosition> result;
     if (m_positionCache.empty())
     {
-        result = doDecoding(position, Hint{ 0, m_basePosition });
+        result = doDecoding(position, Hint{0, m_basePosition});
     }
     else
     {
         auto iter = m_positionCache.lower_bound(position);
         if (iter == m_positionCache.cbegin())
         {
-            result = doDecoding(position, Hint{ 0, m_basePosition });
+            result = doDecoding(position, Hint{0, m_basePosition});
         }
         else
         {
             --iter;
-            result = doDecoding(position, Hint{ iter->second, iter->first });
+            result = doDecoding(position, Hint{iter->second, iter->first});
         }
     }
 
@@ -79,13 +82,13 @@ auto LineColumnDecoder::offset(const LineAndColumn& position) const -> std::opti
     }
     else
     {
-        return{};
+        return {};
     }
 }
 
 auto LineColumnDecoder::lineOffset(size_t line) const -> std::optional<size_t>
 {
-    return offset(LineAndColumn{ line, 1 });
+    return offset(LineAndColumn{line, 1});
 }
 
 auto LineColumnDecoder::lastColumn(size_t line) const -> std::optional<size_t>
@@ -97,7 +100,7 @@ auto LineColumnDecoder::lastColumn(size_t line) const -> std::optional<size_t>
     }
     else
     {
-        return{};
+        return {};
     }
 }
 
@@ -124,20 +127,19 @@ void LineColumnDecoder::addHint(const Hint& hint)
 
 void LineColumnDecoder::addHints(std::initializer_list<Hint> hints)
 {
-    for (auto hint : hints)
-    {
-        addHint(hint);
-    }
+    for (auto hint : hints) { addHint(hint); }
 }
 
 auto LineColumnDecoder::hints() const -> std::vector<Hint>
 {
     std::vector<Hint> result;
-    for (auto hintPair : m_offsetCache)
-    {
-        result.push_back(Hint{ hintPair.first, hintPair.second });
-    }
+    for (auto hintPair : m_offsetCache) { result.push_back(Hint{hintPair.first, hintPair.second}); }
     return result;
 }
 
+auto LineColumnDecoder::indentationWidth() const -> size_t
+{
+    return m_indentationWidth;
 }
+
+} // namespace diagnostics

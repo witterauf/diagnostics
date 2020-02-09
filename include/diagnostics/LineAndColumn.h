@@ -12,25 +12,13 @@ struct LineAndColumn
     static constexpr size_t EndOfLine = ~0UL;
     static constexpr size_t EndOfSource = ~0UL;
 
-    bool isSpecial() const
-    {
-        return isEndOfLine() || isEnd();
-    }
+    bool isSpecial() const { return isEndOfLine() || isEnd(); }
 
-    bool isEndOfLine() const
-    {
-        return column == EndOfLine;
-    }
+    bool isEndOfLine() const { return column == EndOfLine; }
 
-    bool isEnd() const
-    {
-        return line == EndOfSource && isEndOfLine();
-    }
+    bool isEnd() const { return line == EndOfSource && isEndOfLine(); }
 
-    bool isValid() const
-    {
-        return line >= 1 && column >= 1;
-    }
+    bool isValid() const { return line >= 1 && column >= 1; }
 
     auto operator<(const LineAndColumn& rhs) const
     {
@@ -42,35 +30,22 @@ struct LineAndColumn
         return line == rhs.line && column == rhs.column;
     }
 
-    auto nextLine() const -> LineAndColumn
-    {
-        return { line + 1, 1 };
-    }
+    auto nextLine() const -> LineAndColumn { return {line + 1, 1}; }
 
-    auto nextColumn() const -> LineAndColumn
-    {
-        return { line, column + 1 };
-    }
+    auto nextColumn() const -> LineAndColumn { return {line, column + 1}; }
 
-    static auto endOfLine(size_t line) -> LineAndColumn
-    {
-        return { line, EndOfLine };
-    }
+    auto skipColumns(size_t columns) const -> LineAndColumn { return {line, column + columns}; }
+
+    static auto endOfLine(size_t line) -> LineAndColumn { return {line, EndOfLine}; }
 };
 
 struct LineAndColumnRange
 {
     LineAndColumn start, end;
 
-    bool isEmpty() const
-    {
-        return start == end || end < start;
-    }
+    bool isEmpty() const { return start == end || end < start; }
 
-    bool containsLine(size_t line) const
-    {
-        return line >= start.line && line <= end.line;
-    }
+    bool containsLine(size_t line) const { return line >= start.line && line <= end.line; }
 };
 
-}
+} // namespace diagnostics

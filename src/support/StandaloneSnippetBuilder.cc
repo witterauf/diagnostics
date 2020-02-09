@@ -89,7 +89,7 @@ auto StandaloneSnippetBuilder::build() -> std::shared_ptr<StandaloneSnippet>
 auto StandaloneSnippetBuilder::makeSnippet() -> std::shared_ptr<StandaloneSnippet>
 {
     auto snippet = std::make_shared<StandaloneSnippet>(m_realSourceRange, m_realCursor);
-    
+
     for (auto number = m_realSourceRange.start.line; number <= m_realSourceRange.end.line; ++number)
     {
         DiagnosticSnippet::Line line;
@@ -111,7 +111,7 @@ auto StandaloneSnippetBuilder::putLineCursor(size_t number) -> std::optional<siz
     }
     else
     {
-        return{};
+        return {};
     }
 }
 
@@ -140,12 +140,30 @@ auto StandaloneSnippetBuilder::markLine(size_t number) -> std::optional<Diagnost
             }
             else
             {
-                throw std::runtime_error{ "invalid line" };
+                throw std::runtime_error{"invalid line"};
             }
         }
         return range;
     }
-    return{};
+    return {};
+}
+
+static auto tabsToSpaces(const std::string& line, size_t width) -> std::string
+{
+    std::string withSpaces;
+    auto const spaces = std::string(width, ' ');
+    for (auto const c : line)
+    {
+        if (c == '\t')
+        {
+            withSpaces += spaces;
+        }
+        else
+        {
+            withSpaces += c;
+        }
+    }
+    return withSpaces;
 }
 
 auto StandaloneSnippetBuilder::extractLine(size_t line) -> std::string
@@ -157,11 +175,13 @@ auto StandaloneSnippetBuilder::extractLine(size_t line) -> std::string
         auto const startOffset = *maybeStartOffset;
         auto const endOffset = *maybeEndOffset;
         auto const length = endOffset - startOffset;
-        return std::string{ reinterpret_cast<const char*>(m_source + startOffset), length };
+        return tabsToSpaces(
+            std::string{reinterpret_cast<const char*>(m_source + startOffset), length},
+            m_decoder->indentationWidth());
     }
     else
     {
-        throw std::runtime_error{ "invalid line" };
+        throw std::runtime_error{"invalid line"};
     }
 }
 
@@ -172,7 +192,7 @@ void StandaloneSnippetBuilder::translateSourceRange()
         auto const range = std::get<DiagnosticSnippet::Range>(*m_sourceRange);
         auto const start = m_decoder->decode(range.start);
         auto const end = m_decoder->decode(range.end);
-        m_realSourceRange = { start, end };
+        m_realSourceRange = {start, end};
     }
     else
     {
@@ -189,7 +209,7 @@ void StandaloneSnippetBuilder::translateMarkedRange()
             auto const range = std::get<DiagnosticSnippet::Range>(*m_markedRange);
             auto const start = m_decoder->decode(range.start);
             auto const end = m_decoder->decode(range.end);
-            m_realMarkedRange = { start, end };
+            m_realMarkedRange = {start, end};
         }
         else
         {

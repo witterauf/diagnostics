@@ -70,6 +70,10 @@ void Utf8LineColumnDecoder::advance() const
             ++m_offset;
         }
     }
+    else if (buffer()[m_offset] == '\t')
+    {
+        m_position = m_position.skipColumns(indentationWidth());
+    }
     else
     {
         m_position = m_position.nextColumn();

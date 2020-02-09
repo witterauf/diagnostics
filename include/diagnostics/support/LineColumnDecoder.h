@@ -20,7 +20,8 @@ public:
         Utf8
     };
 
-    static auto make(const uint8_t* source, size_t size, Encoding encoding = Encoding::Ascii) -> std::unique_ptr<LineColumnDecoder>;
+    static auto make(const uint8_t* source, size_t size, Encoding encoding = Encoding::Ascii)
+        -> std::unique_ptr<LineColumnDecoder>;
 
     virtual ~LineColumnDecoder() = default;
 
@@ -31,6 +32,7 @@ public:
     auto lineOffset(size_t line) const -> std::optional<size_t>;
     auto endOfLineOffset(size_t line) const -> std::optional<size_t>;
     auto lastColumn(size_t line) const -> std::optional<size_t>;
+    auto indentationWidth() const -> size_t;
 
     struct OffsetAndPosition
     {
@@ -38,7 +40,9 @@ public:
         LineAndColumn position;
     };
 
-    struct Hint : public OffsetAndPosition {};
+    struct Hint : public OffsetAndPosition
+    {
+    };
 
     void addHint(const Hint& hint);
     void addHints(std::initializer_list<Hint> hints);
@@ -50,13 +54,15 @@ protected:
 
 private:
     virtual auto doDecoding(size_t offset, const Hint& hint) const -> LineAndColumn = 0;
-    virtual auto doDecoding(const LineAndColumn& position, const Hint& hint) const -> std::optional<OffsetAndPosition> = 0;
+    virtual auto doDecoding(const LineAndColumn& position, const Hint& hint) const
+        -> std::optional<OffsetAndPosition> = 0;
 
     const uint8_t* m_source = nullptr;
     size_t m_size = 0;
     mutable std::map<size_t, LineAndColumn> m_offsetCache;
     mutable std::map<LineAndColumn, size_t> m_positionCache;
-    LineAndColumn m_basePosition{ 1, 1 };
+    LineAndColumn m_basePosition{1, 1};
+    size_t m_indentationWidth{2};
 };
 
-}
+} // namespace diagnostics

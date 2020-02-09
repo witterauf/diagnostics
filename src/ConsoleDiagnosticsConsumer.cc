@@ -45,7 +45,7 @@ void ConsoleDiagnosticsConsumer::printMessage()
     default: break;
     }
 
-    if (diagnostic().hasTag())
+    if (m_showTag && diagnostic().hasTag())
     {
         std::cout << " [" << diagnostic().tag() << "]";
     }
@@ -173,6 +173,16 @@ auto ConsoleDiagnosticsConsumer::snippetCodeLeft() const -> size_t
 auto ConsoleDiagnosticsConsumer::diagnostic() const -> const Diagnostic&
 {
     return *m_diagnostic;
+}
+
+void ConsoleDiagnosticsConsumer::showTag()
+{
+    m_showTag = true;
+}
+
+void ConsoleDiagnosticsConsumer::hideTag()
+{
+    m_showTag = false;
 }
 
 } // namespace diagnostics
