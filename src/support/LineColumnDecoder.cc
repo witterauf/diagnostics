@@ -55,7 +55,7 @@ auto LineColumnDecoder::offset(const LineAndColumn& position) const -> std::opti
     Expects(m_source);
     Expects(position.isValid());
 
-    std::optional<OffsetAndPosition> result;
+    std::optional<OffsetAndPosition> result{};
     if (m_positionCache.empty())
     {
         result = doDecoding(position, Hint{0, m_basePosition});
@@ -74,16 +74,14 @@ auto LineColumnDecoder::offset(const LineAndColumn& position) const -> std::opti
         }
     }
 
+    std::optional<size_t> maybeOffset;
     if (result)
     {
         m_offsetCache.insert(std::make_pair(result->offset, result->position));
         m_positionCache.insert(std::make_pair(result->position, result->offset));
-        return result->offset;
+        maybeOffset = result->offset;
     }
-    else
-    {
-        return {};
-    }
+    return maybeOffset;
 }
 
 auto LineColumnDecoder::lineOffset(size_t line) const -> std::optional<size_t>
