@@ -28,7 +28,7 @@ public:
     {
         auto proxy = std::make_unique<Reporter>(std::forward<Args>(args)...);
         proxy->registerConsumer(this);
-        return std::move(proxy);
+        return proxy;
     }
 
     template<class Reporter, class... Args>
@@ -36,7 +36,7 @@ public:
     {
         Reporter proxy{ std::forward<Args>(args)... };
         proxy.registerConsumer(this);
-        return std::move(proxy);
+        return proxy;
     }
 
 private:

@@ -83,7 +83,7 @@ auto StandaloneSnippetBuilder::build() -> std::shared_ptr<StandaloneSnippet>
     auto snippet = makeSnippet();
 
     reset();
-    return std::move(snippet);
+    return snippet;
 }
 
 auto StandaloneSnippetBuilder::makeSnippet() -> std::shared_ptr<StandaloneSnippet>
@@ -100,7 +100,7 @@ auto StandaloneSnippetBuilder::makeSnippet() -> std::shared_ptr<StandaloneSnippe
         snippet->append(line);
     }
 
-    return std::move(snippet);
+    return snippet;
 }
 
 auto StandaloneSnippetBuilder::putLineCursor(size_t number) -> std::optional<size_t>

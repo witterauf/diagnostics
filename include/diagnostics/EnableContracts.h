@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #ifndef __CONTRACTS_ENABLED__
 
 #ifndef STRINGIFY_HELPER
