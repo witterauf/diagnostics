@@ -16,7 +16,7 @@ void InMemoryReporter::unsetComment()
 auto InMemoryReporter::makeLocation(size_t offset) -> DiagnosticLocation
 {
     auto const position = decoder().decode(offset);
-    DiagnosticLocation location{ position };
+    DiagnosticLocation location{position};
     if (m_comment.has_value())
     {
         location.setComment(*m_comment);
@@ -24,4 +24,4 @@ auto InMemoryReporter::makeLocation(size_t offset) -> DiagnosticLocation
     return location;
 }
 
-}
+} // namespace diagnostics

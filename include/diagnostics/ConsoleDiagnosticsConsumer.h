@@ -1,12 +1,15 @@
 #pragma once
 
 #include "DiagnosticsConsumer.h"
+#include <iostream>
 
 namespace diagnostics {
 
 class ConsoleDiagnosticsConsumer : public DiagnosticsConsumer
 {
 public:
+    ConsoleDiagnosticsConsumer() = default;
+    explicit ConsoleDiagnosticsConsumer(std::ostream* out);
     void startPhase(const std::string& name) override;
     void consume(const Diagnostic& diagnostic) override;
     void endPhase() override;
@@ -29,7 +32,8 @@ private:
     void calculateSnippetLayout();
     auto snippetCodeLeft() const -> size_t;
 
-    const Diagnostic* m_diagnostic = nullptr;
+    const Diagnostic* m_diagnostic{nullptr};
+    std::ostream* m_out{&std::cout};
 
     bool m_includeLineNumber = true;
     size_t m_snippetIndentation = 2;
