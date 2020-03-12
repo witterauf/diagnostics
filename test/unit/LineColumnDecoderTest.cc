@@ -27,6 +27,10 @@ protected:
     }
 };
 
+}
+
+namespace diagnostics {
+
 auto operator==(const LineColumnDecoder::Hint& a, const LineColumnDecoder::Hint& b)
 {
     return a.offset == b.offset && a.position.line == b.position.line && a.position.column == b.position.column;
@@ -37,7 +41,7 @@ auto operator!=(const LineColumnDecoder::Hint& a, const LineColumnDecoder::Hint&
     return !(a == b);
 }
 
-}
+} // namespace diagnostics
 
 using Catch::Matchers::Equals;
 
