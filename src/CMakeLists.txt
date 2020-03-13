@@ -47,6 +47,7 @@ target_include_directories(Diagnostics
 	PRIVATE
 		"${DIAGNOSTICS_INCLUDE_DIR}/diagnostics"
 )
+set_property(TARGET Diagnostics PROPERTY POSITION_INDEPENDENT_CODE ON)
 add_library(Diagnostics::Diagnostics ALIAS Diagnostics)
 
 source_group("Diagnostics" FILES ${DIAGNOSTICS_SOURCES})
