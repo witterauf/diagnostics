@@ -7,5 +7,9 @@ set(DIAGNOSTICS_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 include(TargetWarnings)
 
+option(DIAGNOSTICS_BUILD_UNIT_TESTS "build unit tests")
 add_subdirectory(src)
-add_subdirectory(test)
+
+if (DIAGNOSTICS_BUILD_UNIT_TESTS)
+  add_subdirectory(test)
+endif()
